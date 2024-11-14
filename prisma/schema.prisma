@@ -16,11 +16,13 @@ datasource db {
 model User {
   id           Int           @id @default(autoincrement())
   connections  Connection[]  @relation("UserConnections")
+  connectedTo  Connection[]  @relation("ConnectedUserConnections")
   posts        Post[]        @relation("UserPosts")
   readPosts    ReadPost[]
   comments     Comment[]     @relation("UserComments")
   attributes   Attribute[]   @relation("UserAttributes")
 }
+
 
 model Connection {
   id             Int    @id @default(autoincrement())
@@ -28,7 +30,9 @@ model Connection {
   connectedToId  Int
   connectionType String
   user           User   @relation("UserConnections", fields: [userId], references: [id])
+  connectedTo    User   @relation("ConnectedUserConnections", fields: [connectedToId], references: [id])
 }
+
 
 model Post {
   id         Int           @id @default(autoincrement())
@@ -51,11 +55,11 @@ model Comment {
 }
 
 model Attribute {
-  id       Int    @id @default(autoincrement())
-  userId   Int
-  type     String
-  value    String
-  user     User   @relation("UserAttributes", fields: [userId], references: [id])
+  id        Int    @id @default(autoincrement())
+  type      String
+  value     String
+  userId    Int
+  user      User   @relation("UserAttributes", fields: [userId], references: [id])
 }
 
 model ReadPost {
