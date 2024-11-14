@@ -1,52 +1,55 @@
 import { spawn } from 'child_process';
 import path from 'path';
 import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';  // Adjust the path to the correct location
+import { prisma } from '../../../../lib/prisma';
 
 export async function POST(request: Request) {
   try {
     const { includeKeywords, excludeKeywords, userFilters } = await request.json();
 
+    // Log filters to check what is being received
+    console.log('Received filters:', { includeKeywords, excludeKeywords, userFilters });
+
     // Build the query to filter posts based on userFilters (e.g., age, gender, region)
     const filterConditions: any = {};
 
+    // Filter conditions should match based on the attribute type and value
+    const attributeFilters: any[] = [];
+
     if (userFilters.age) {
-      filterConditions.attributes = {
-        age: userFilters.age,
-      };
+      attributeFilters.push({ type: 'age', value: userFilters.age });
     }
 
     if (userFilters.gender) {
-      filterConditions.attributes = {
-        ...filterConditions.attributes,
-        gender: userFilters.gender,
-      };
+      attributeFilters.push({ type: 'gender', value: userFilters.gender });
     }
 
     if (userFilters.region) {
-      filterConditions.attributes = {
-        ...filterConditions.attributes,
-        region: userFilters.region,
-      };
+      attributeFilters.push({ type: 'region', value: userFilters.region });
     }
+
+    // Log the attribute filter conditions
+    console.log('Attribute filter conditions:', attributeFilters);
 
     // Fetch posts based on the filters
     const posts = await prisma.post.findMany({
       where: {
         content: {
           // Include posts containing the specified keywords
-          contains: includeKeywords.join(' '),
+          contains: includeKeywords && includeKeywords.length > 0 ? includeKeywords.join(' ') : undefined,
           // Exclude posts containing any of the excluded keywords
-          not: {
-            contains: excludeKeywords.join(' '),
-          },
+          not: excludeKeywords && excludeKeywords.length > 0 ? { contains: excludeKeywords.join(' ') } : undefined,
         },
-        user: {
-          attributes: filterConditions.attributes ? filterConditions.attributes : {},
+        poster: {
+          attributes: {
+            some: attributeFilters.length > 0 ? { 
+              AND: attributeFilters 
+            } : {},
+          },
         },
       },
       include: {
-        user: {
+        poster: {
           include: {
             attributes: true,
           },
@@ -60,7 +63,7 @@ export async function POST(request: Request) {
     }
 
     // Prepare the filtered posts content for word cloud generation
-    const content = posts.map(post => post.content).join(' ');
+    const content = posts.map((post) => post.content).join(' ');
 
     // Run the Python script to generate the word cloud
     const pythonProcess = spawn('python', [

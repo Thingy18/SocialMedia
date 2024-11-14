@@ -6,7 +6,7 @@ export async function POST(request: Request) {
   try {
     // Get the text content from the request body
     const { text } = await request.json();
-
+    
     // Escape the text to avoid issues with special characters
     const safeText = text.replace(/"/g, '\\"');
 

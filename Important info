@@ -17,3 +17,5 @@ You should create a separate branch for your algorithm I will create a separate 
 
 For the word cloud you will need to install python libraries
 pip install wordcloud matplotlib pillow
+
+word cloud is not yet complete I will finish the rest on friday
