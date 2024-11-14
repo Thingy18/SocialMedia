@@ -51,11 +51,12 @@ model Comment {
 }
 
 model Attribute {
-  id       Int    @id @default(autoincrement())
-  userId   Int
-  type     String
-  value    String
-  user     User   @relation("UserAttributes", fields: [userId], references: [id])
+  id            Int      @id @default(autoincrement())
+  userId        Int
+  age           Int?
+  gender        String?
+  region        String?
+  user          User     @relation(fields: [userId], references: [id])
 }
 
 model ReadPost {

@@ -14,3 +14,6 @@ Once that is done you will have a database set up with same sample info
 I have also created a couple of functions for basic things to do 
 
 You should create a separate branch for your algorithm I will create a separate branch for mine 
+
+For the word cloud you will need to install python libraries
+pip install wordcloud matplotlib pillow
