@@ -7,31 +7,30 @@ const HomePage = async () => {
   let postsContent = '';
 
   try {
-    // Fetch the most recent 5 posts from the database
+    // Fetch all posts from the database
     const posts = await prisma.post.findMany({
       orderBy: {
-        createdAt: 'desc',
+        createdAt: 'desc', // Optional: order by the created date, you can remove this if order is not needed
       },
-      take: 5, // Get the most recent 5 posts
     });
 
+    // Concatenate the content of all posts
     if (posts.length > 0) {
-      // Concatenate the content of all posts
       postsContent = posts.map(post => post.content).join(' ');
     } else {
-      postsContent = 'No content available';
+      postsContent = 'No content available';  // Fallback message when there are no posts
     }
   } catch (error) {
     console.error('Error fetching content from database:', error);
-    postsContent = 'Error fetching content';
+    postsContent = 'Error fetching content';  // Fallback in case of an error
   } finally {
-    await prisma.$disconnect();
+    await prisma.$disconnect();  // Ensure the Prisma client is disconnected
   }
 
   return (
     <div>
       <h1>Word Cloud Example</h1>
-      <WordCloud text={postsContent} />
+      <WordCloud text={postsContent} /> {/* Pass the concatenated post content to WordCloud */}
     </div>
   );
 };
