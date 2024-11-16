@@ -1,62 +1,81 @@
-'use client';  // Ensure the component runs on the client side in Next.js (client-side rendering)
+'use client';  // Ensure this component is treated as a client-side component
 
 import { useEffect, useState } from 'react';
-import Image from 'next/image'; // Import Image component from Next.js for optimized image loading
+import Image from 'next/image';
 
-// WordCloud component that takes text as a prop and generates a word cloud
 const WordCloud = ({ text }: { text: string }) => {
-  // State to store the URL of the generated word cloud image
   const [wordCloudUrl, setWordCloudUrl] = useState<string | null>(null);
+  const [includeKeywords, setIncludeKeywords] = useState<string[]>([]);
+  const [excludeKeywords, setExcludeKeywords] = useState<string[]>([]);
+  const [attributes, setAttributes] = useState<{ type: string, value: string }[]>([]);
 
-  // useEffect hook to fetch word cloud whenever the 'text' prop changes
-  useEffect(() => {
-    const fetchWordCloud = async () => {
-      try {
-        // Send a POST request to the API route with the text to generate a word cloud
-        const response = await fetch('/api/wordcloud', {
-          method: 'POST',  // HTTP method is POST
-          headers: {
-            'Content-Type': 'application/json',  // Specify the content type
-          },
-          body: JSON.stringify({ text }), // Send the text content as JSON
-        });
+  // Function to parse attribute input (e.g., "age:25, gender:Male")
+  const parseAttributes = (input: string) => {
+    const parsedAttributes = input.split(',').map((item) => {
+      const [type, value] = item.split(':').map((str) => str.trim());
+      return { type, value };
+    });
+    setAttributes(parsedAttributes);
+  };
 
-        // Parse the response from the API
-        const data = await response.json();
-        
-        if (response.ok) {
-          // If the response is successful, set the image URL in state
-          setWordCloudUrl(data.image);
-        } else {
-          console.error('Error generating word cloud'); // Handle failure if response is not OK
-        }
-      } catch (error) {
-        console.error('Error fetching word cloud:', error); // Handle errors during the fetch process
+  // Function to fetch the word cloud when the button is clicked
+  const fetchWordCloud = async () => {
+    try {
+      const response = await fetch('/api/wordcloud', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          text,
+          includeKeywords,
+          excludeKeywords,
+          attributes,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setWordCloudUrl(data.image); // Set the URL of the word cloud image
+      } else {
+        console.error('Error generating word cloud');
       }
-    };
-
-    fetchWordCloud(); // Call the function to fetch the word cloud
-  }, [text]); // The effect runs whenever the 'text' prop changes
+    } catch (error) {
+      console.error('Error fetching word cloud:', error);
+    }
+  };
 
   return (
     <div>
+      <div>
+        <input
+          type="text"
+          placeholder="Include keywords (comma separated)"
+          onChange={(e) => setIncludeKeywords(e.target.value.split(',').map(keyword => keyword.trim()))}
+        />
+        <input
+          type="text"
+          placeholder="Exclude keywords (comma separated)"
+          onChange={(e) => setExcludeKeywords(e.target.value.split(',').map(keyword => keyword.trim()))}
+        />
+        <input
+          type="text"
+          placeholder="User attributes (e.g., age:25, gender:Male)"
+          onChange={(e) => parseAttributes(e.target.value)}
+        />
+      </div>
+
+      {/* Button to trigger fetching of the word cloud */}
+      <button onClick={fetchWordCloud}>Generate Word Cloud</button>
+
       {wordCloudUrl ? (
-        // If the word cloud image URL is available, display the image
-        <>
-          <Image 
-            src={wordCloudUrl} 
-            alt="Word Cloud" 
-            layout="responsive"  // Image layout will scale responsively
-            width={500}           // Set the width of the image
-            height={500}          // Set the height of the image
-          />
-        </>
+        <Image src={wordCloudUrl} alt="Word Cloud" width={500} height={500} />
       ) : (
-        // If the word cloud URL isn't available yet, show a loading message
         <p>Loading word cloud...</p>
       )}
     </div>
   );
 };
 
-export default WordCloud;  // Export the WordCloud component for use in other parts of the app
+export default WordCloud;
