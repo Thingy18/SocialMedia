@@ -1,6 +1,7 @@
 'use client';
-
+//Grabs all of the words from every post in the database and calls the python class to make the word cloud
 import { useEffect, useState } from 'react';
+import Image from 'next/image';
 
 const WordCloud = ({ text }: { text: string }) => {
   const [wordCloudUrl, setWordCloudUrl] = useState<string | null>(null);
@@ -33,7 +34,9 @@ const WordCloud = ({ text }: { text: string }) => {
   return (
     <div>
       {wordCloudUrl ? (
-        <img src={wordCloudUrl} alt="Word Cloud" style={{ width: '100%', height: 'auto' }} />
+        <>
+          <Image src={wordCloudUrl} alt="Word Cloud" layout="responsive" width={500} height={500} />
+        </>
       ) : (
         <p>Loading word cloud...</p>
       )}

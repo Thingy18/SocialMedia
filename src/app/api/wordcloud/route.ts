@@ -6,7 +6,7 @@ export async function POST(request: Request) {
   try {
     // Get the text content from the request body
     const { text } = await request.json();
-    
+
     // Escape the text to avoid issues with special characters
     const safeText = text.replace(/"/g, '\\"');
 
@@ -16,7 +16,7 @@ export async function POST(request: Request) {
       safeText
     ], {
       detached: true,  // Ensures the process runs independently
-      stdio: 'ignore'  // Avoids output to the console, preventing IDE from opening tabs
+      stdio: 'ignore'  // Avoids output to the console
     });
 
     pythonProcess.unref();  // Detach from the parent process to run independently
