@@ -1,5 +1,5 @@
 'use client';
-//Grabs all of the words from every post in the database and calls the python class to make the word cloud
+
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
 
@@ -14,7 +14,7 @@ const WordCloud = ({ text }: { text: string }) => {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ text }),
+          body: JSON.stringify({ text }), // Send the text from posts here
         });
 
         const data = await response.json();
