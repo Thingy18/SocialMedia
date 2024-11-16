@@ -14,8 +14,8 @@ export async function POST(request: Request) {
     let content = text || '';
 
     if (!text) {
+      // Fetch all posts' content from the database
       const posts = await prisma.post.findMany({
-        take: 5, // Ensure you get the most recent posts
         select: {
           content: true,
         },
