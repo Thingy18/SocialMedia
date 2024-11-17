@@ -8,12 +8,13 @@ const prisma = new PrismaClient();
 export async function POST(request: Request) {
   try {
     // Get the text content and filters from the request body
-    const { text, includeKeywords, excludeKeywords, attributes } = await request.json();
+    const { includeKeywords, excludeKeywords, attributes } = await request.json();
 
     // Prepare the base query for fetching posts
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const postsQuery: any = {
       select: { content: true, poster: { select: { attributes: true } } },
-      where: {}  // Ensure `where` is always initialized
+      where: {}
     };
 
     // Apply filters for includeKeywords
@@ -56,7 +57,7 @@ export async function POST(request: Request) {
     // Escape the text to avoid issues with special characters
     const safeText = content.replace(/"/g, '\\"');
 
-    // Run the Python script in the background without opening a new tab in IDE
+    // Run the Python script to generate the word cloud
     const pythonProcess = spawn('pythonw', [
       path.join(process.cwd(), 'src/components/WordCloud.py'),
       safeText,

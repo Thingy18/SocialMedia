@@ -1,15 +1,16 @@
-'use client';  // Ensure this component is treated as a client-side component
+'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import Image from 'next/image';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 const WordCloud = ({ text }: { text: string }) => {
   const [wordCloudUrl, setWordCloudUrl] = useState<string | null>(null);
+  //Gets the filters from the user input
   const [includeKeywords, setIncludeKeywords] = useState<string[]>([]);
   const [excludeKeywords, setExcludeKeywords] = useState<string[]>([]);
-  const [attributes, setAttributes] = useState<{ type: string, value: string }[]>([]);
-
-  // Function to parse attribute input (e.g., "age:25, gender:Male")
+  const [attributes, setAttributes] = useState<{ type: string; value: string }[]>([]);
+  //Parses the attributes from the user input
   const parseAttributes = (input: string) => {
     const parsedAttributes = input.split(',').map((item) => {
       const [type, value] = item.split(':').map((str) => str.trim());
@@ -17,8 +18,7 @@ const WordCloud = ({ text }: { text: string }) => {
     });
     setAttributes(parsedAttributes);
   };
-
-  // Function to fetch the word cloud when the button is clicked
+  //Calls the API to generate the word cloud which in turn calls the python script
   const fetchWordCloud = async () => {
     try {
       const response = await fetch('/api/wordcloud', {
@@ -37,7 +37,7 @@ const WordCloud = ({ text }: { text: string }) => {
       const data = await response.json();
 
       if (response.ok) {
-        setWordCloudUrl(data.image); // Set the URL of the word cloud image
+        setWordCloudUrl(data.image);
       } else {
         console.error('Error generating word cloud');
       }
@@ -47,33 +47,64 @@ const WordCloud = ({ text }: { text: string }) => {
   };
 
   return (
-    <div>
-      <div>
-        <input
-          type="text"
-          placeholder="Include keywords (comma separated)"
-          onChange={(e) => setIncludeKeywords(e.target.value.split(',').map(keyword => keyword.trim()))}
-        />
-        <input
-          type="text"
-          placeholder="Exclude keywords (comma separated)"
-          onChange={(e) => setExcludeKeywords(e.target.value.split(',').map(keyword => keyword.trim()))}
-        />
-        <input
-          type="text"
-          placeholder="User attributes (e.g., age:25, gender:Male)"
-          onChange={(e) => parseAttributes(e.target.value)}
-        />
+    <div className="container mt-4">
+      <div className="row">
+        <div className="col-md-6 offset-md-3">
+          {/* Input Fields */}
+          <div className="mb-3">
+            <label htmlFor="includeKeywords" className="form-label">
+              Include Keywords
+            </label>
+            <input
+              type="text"
+              id="includeKeywords"
+              placeholder="Comma-separated keywords to include"
+              className="form-control"
+              onChange={(e) => setIncludeKeywords(e.target.value.split(',').map((keyword) => keyword.trim()))}
+            />
+          </div>
+
+          <div className="mb-3">
+            <label htmlFor="excludeKeywords" className="form-label">
+              Exclude Keywords
+            </label>
+            <input
+              type="text"
+              id="excludeKeywords"
+              placeholder="Comma-separated keywords to exclude"
+              className="form-control"
+              onChange={(e) => setExcludeKeywords(e.target.value.split(',').map((keyword) => keyword.trim()))}
+            />
+          </div>
+
+          <div className="mb-3">
+            <label htmlFor="attributes" className="form-label">
+              User Attributes
+            </label>
+            <input
+              type="text"
+              id="attributes"
+              placeholder="e.g., age:25, gender:Male"
+              className="form-control"
+              onChange={(e) => parseAttributes(e.target.value)}
+            />
+          </div>
+
+          {/* Button */}
+          <button onClick={fetchWordCloud} className="btn btn-primary w-100">
+            Generate Word Cloud
+          </button>
+
+          {/* Word Cloud Display */}
+          {wordCloudUrl ? (
+            <div className="mt-4 text-center">
+              <Image src={wordCloudUrl} alt="Word Cloud" width={500} height={500} />
+            </div>
+          ) : (
+            <p className="mt-4 text-center">Loading word cloud...</p>
+          )}
+        </div>
       </div>
-
-      {/* Button to trigger fetching of the word cloud */}
-      <button onClick={fetchWordCloud}>Generate Word Cloud</button>
-
-      {wordCloudUrl ? (
-        <Image src={wordCloudUrl} alt="Word Cloud" width={500} height={500} />
-      ) : (
-        <p>Loading word cloud...</p>
-      )}
     </div>
   );
 };
