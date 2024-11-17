@@ -10,7 +10,7 @@ const HomePage = async () => {
     // Fetch all posts from the database
     const posts = await prisma.post.findMany({
       orderBy: {
-        createdAt: 'desc', // Optional: order by the created date, you can remove this if order is not needed
+        createdAt: 'desc', // Order by the created date
       },
     });
 
@@ -29,7 +29,6 @@ const HomePage = async () => {
 
   return (
     <div>
-      <h1>Word Cloud Example</h1>
       <WordCloud text={postsContent} /> {/* Pass the concatenated post content to WordCloud */}
     </div>
   );

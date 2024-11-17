@@ -28,7 +28,7 @@ export async function POST(request: Request) {
     // Escape the text to avoid issues with special characters
     const safeText = content.replace(/"/g, '\\"');
 
-    // Run the Python script in the background without opening a new tab in IDE
+    // Run the Python script to generate the word cloud
     const pythonProcess = spawn('pythonw', [
       path.join(process.cwd(), 'src/components/WordCloud.py'),
       safeText,

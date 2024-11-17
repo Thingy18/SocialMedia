@@ -16,7 +16,5 @@ wordcloud = WordCloud(
     random_state=int(time.time())  # Use current time as random state
 ).generate(text)
 
-# Save the word cloud image to a file instead of showing it
+# Save the word cloud image to a file
 wordcloud.to_file('public/wordcloud.png')
-
-# No need to call plt.close() as 'Agg' doesn't use interactive plotting
