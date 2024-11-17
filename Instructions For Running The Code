@@ -1,19 +1,20 @@
+Run npm install
+
 You will have to create your own db 
 
 Copy the sample.env file into a new .env file and modify the DATABASE_URL to connect to your own database
 
-You will also need to run npm install
-
 After creating database you will need to run 
 npx prisma migrate dev 
-The run
+Then run
 npx prisma db seed
 
 Once that is done you will have a database set up with same sample info
 
-I have also created a couple of functions for basic things to do 
-
-You should create a separate branch for your algorithm I will create a separate branch for mine 
-
 For the word cloud you will need to install python libraries
-pip install wordcloud matplotlib pillow
+Run pip install wordcloud matplotlib pillow
+
+Then you can run
+npm run dev
+
+If you have done everything right then you should have a working webpage pulled up

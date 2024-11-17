@@ -7,7 +7,7 @@ const prisma = new PrismaClient();
 
 export async function POST(request: Request) {
   try {
-    // Get the text content and filters from the request body
+    // Get filters from the request body
     const { includeKeywords, excludeKeywords, attributes } = await request.json();
 
     // Prepare the base query for fetching posts
