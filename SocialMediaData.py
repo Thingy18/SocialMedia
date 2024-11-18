@@ -1,30 +1,70 @@
+"""
+SocialMediaGraph Visualization Tool
+===================================
+This script defines a SocialMediaGraph class that uses the NetworkX library 
+to model and visualize a social media network of users and posts. Nodes in 
+the graph represent users and posts, while edges represent relationships 
+(e.g., authorship or viewing). The graph can be visualized with nodes 
+highlighted based on their attributes such as 'comments' or 'views'.
+
+Author: Kevin Clarkin
+Date: 2024-11-17
+"""
+
 import networkx as nx
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
 import numpy as np
 
-
 class SocialMediaGraph:
+    """
+    A class to represent and visualize a social media graph.
+    Nodes represent users and posts, and edges represent connections
+    between them, such as authorship or viewing relationships.
+    """
+
     def __init__(self):
+        """
+        Initialize a new SocialMediaGraph instance.
+        Creates an empty graph and prepares for layout computation.
+        """
         self.graph = nx.Graph()
         self.layout = None
 
     def add_user(self, user_id):
-        """Add a user node to the graph."""
+        """
+        Add a user node to the graph.
+
+        :param user_id: Unique identifier for the user.
+        """
         self.graph.add_node(user_id, is_user=True, comments=0, views=0)
 
     def add_post(self, post_id, comments, views):
-        """Add a post node to the graph."""
+        """
+        Add a post node to the graph.
+
+        :param post_id: Unique identifier for the post.
+        :param comments: Number of comments on the post.
+        :param views: Number of views on the post.
+        """
         self.graph.add_node(post_id, is_user=False, comments=comments, views=views)
 
     def add_connection(self, source, destination, connection_type):
-        """Add an edge between two nodes with a connection type."""
+        """
+        Add a connection (edge) between two nodes.
+
+        :param source: The source node identifier.
+        :param destination: The destination node identifier.
+        :param connection_type: The type of connection (e.g., "author", "viewing").
+        """
         self.graph.add_edge(source, destination, type=connection_type)
 
     def draw(self, criterion="comments"):
         """
         Visualize the graph, highlighting nodes based on the specified criterion.
+
         :param criterion: The criterion to highlight nodes ('comments' or 'views').
+        :raises ValueError: If an invalid criterion is provided.
         """
         if criterion not in ["comments", "views"]:
             raise ValueError("Invalid criterion. Choose 'comments' or 'views'.")
@@ -40,7 +80,13 @@ class SocialMediaGraph:
         self._plot_graph(node_colors, criterion)
 
     def _calculate_node_color(self, node, criterion):
-        """Calculate the color for a node based on the given criterion."""
+        """
+        Calculate the color for a node based on the given criterion.
+
+        :param node: Node identifier.
+        :param criterion: The attribute used to determine the color.
+        :return: The calculated color for the node.
+        """
         attribute_values = list(nx.get_node_attributes(self.graph, criterion).values())
         min_value = min(attribute_values, default=0)
         max_value = max(attribute_values, default=1)
@@ -48,11 +94,16 @@ class SocialMediaGraph:
 
         # Normalize values to fit within the colormap
         norm = mcolors.Normalize(vmin=min_value, vmax=max_value)
-        cmap = plt.get_cmap("Blues")  # Changed color map to 'Blues'
+        cmap = plt.get_cmap("Blues")
         return cmap(norm(value))
 
     def _plot_graph(self, node_colors, criterion):
-        """Plot the graph with appropriate node colors and a legend."""
+        """
+        Plot the graph with appropriate node colors and a legend.
+
+        :param node_colors: List of colors for the nodes.
+        :param criterion: The attribute used for coloring nodes.
+        """
         fig, ax = plt.subplots(figsize=(12, 8))
         nx.draw(
             self.graph,
@@ -62,7 +113,7 @@ class SocialMediaGraph:
             node_size=300,
             font_size=8,
             font_color="black",
-            edge_color="lightblue",  # Changed edge color to light blue
+            edge_color="lightblue",
             linewidths=0.5,
             width=0.5,
             alpha=0.7,
@@ -79,11 +130,17 @@ class SocialMediaGraph:
         plt.show()
 
     def _add_legend(self, criterion, ax, fig):
-        """Add a color legend to the graph."""
+        """
+        Add a color legend to the graph.
+
+        :param criterion: The attribute used for coloring nodes.
+        :param ax: The axis object for the graph.
+        :param fig: The figure object for the graph.
+        """
         attribute_values = list(nx.get_node_attributes(self.graph, criterion).values())
         min_value = min(attribute_values, default=0)
         max_value = max(attribute_values, default=1)
-        cmap = plt.get_cmap("Blues")  # Changed color map to 'Blues'
+        cmap = plt.get_cmap("Blues")
         norm = mcolors.Normalize(vmin=min_value, vmax=max_value)
 
         sm = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
@@ -94,6 +151,10 @@ class SocialMediaGraph:
 
 
 def main():
+    """
+    Main function to demonstrate the SocialMediaGraph functionality.
+    Creates a graph with sample users, posts, and connections, and visualizes it.
+    """
     # Initialize the graph
     graph = SocialMediaGraph()
 
